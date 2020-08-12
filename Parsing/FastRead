@@ -19,4 +19,4 @@ int readInt() {
     while( isdigit( ch = readChar() ) );
 
     return number;
-}
+} 
