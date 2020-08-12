@@ -1,0 +1,42 @@
+ull prime[] {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41};
+
+inline ull putereMOD(ull n, ull base, ull MOD) {
+    ull ans = 1, p = n;
+
+    while( base != 0 ) {
+        if( base % 2 == 1 )
+            ans = (ans * p) % MOD;
+        p = (p * p) % MOD;
+        base /= 2;
+    }
+    return ans;
+}
+
+inline bool MillerRabin( ull n, ull base ) {
+    ull number = n - 1, e = 0;
+    while( number % 2 == 0 )
+        number /= 2, e++;
+
+    ull x = (n - 1) / (1ULL << e);
+    ull p = putereMOD(base, x, n);
+    if( p == 1 || p == n - 1 )
+        return true;
+
+    for( ull i = 1; i < e; i++) {
+        p = putereMOD(p, 2, n);
+        if( p == n - 1 )
+            return true;
+    }
+    return false;
+}
+
+ull isPrime(ull number) {
+    for(int k = 0; k < 13; k++)
+        if( number == prime[k] )
+            return 1;
+
+    int ok = 1;
+    for(int k = 0; k < 13 && ok; k++)
+        ok = MillerRabin(number, prime[k]);
+    return ok;
+}
