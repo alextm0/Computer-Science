@@ -1,0 +1,57 @@
+#define BUFSIZE 16384
+
+class InParser {
+    private:
+        FILE *fin;
+        char *buff;
+        int sp;
+
+        char readChar() {
+            sp++;
+            if(sp == BUFSIZE) {
+                sp = 0;
+                fread(buff, 1, BUFSIZE, fin);
+            }
+            return buff[sp];
+        }
+    public:
+        InParser(const char *nume) {
+            fin = fopen(nume, "r");
+            buff= new char [BUFSIZE]();
+            sp = BUFSIZE - 1;
+        }
+
+        InParser& operator >> (int &n) {
+            char ch;
+            while(!isdigit( ch = readChar()) && ch != '-' );
+            int sign = 1;
+            if(ch == '-') {
+                n = 0;
+                sign = -1;
+            }
+            else
+                n = ch - '0';
+            
+            while( isdigit( ch = readChar() ) )
+                n = n * 10 + ch - '0';
+            n *= sign;
+            return *this;
+        }
+
+        InParser& operator >> (long long &n) {
+            char ch;
+            while(!isdigit( ch = readChar()) && ch != '-' );
+            int sign = 1;
+            if(ch == '-') {
+                n = 0;
+                sign = -1;
+            }
+            else
+                n = ch - '0';
+            
+            while( isdigit( ch = readChar() ) )
+                n = n * 10 + ch - '0';
+            n *= sign;
+            return *this;
+        }
+};
