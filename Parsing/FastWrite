@@ -1,0 +1,42 @@
+#define BUFSIZE (128 * 1024)
+#define MAXLOG10 10
+
+int wpos; char wbuf[BUFSIZE];
+int p10[MAXLOG10 + 1] = {0, 1, 10, 100, 1000, 10000, 100000, 1000000,
+  10000000, 100000000, 1000000000};
+
+static inline void initWrite() {
+    wpos = 0;
+}
+
+static inline void writeChar( char ch ) {
+    wbuf[wpos] = ch;
+    if ( !(wpos = (wpos + 1) & (BUFSIZE - 1)) )
+        fwrite( wbuf, 1, BUFSIZE, fout );
+}
+
+void writeInt(int x) {
+    int i, cf;
+
+    i = MAXLOG10;
+    while(p10[i] > x)
+        i--;
+
+    if(i == 0)
+        writeChar('0');
+    else
+        do {
+            cf = '0';
+            while(p10[i] <= x) {
+                x -= p10[i];
+                cf++;
+            }
+            writeChar(cf);
+        } while(--i > 0);
+
+    writeChar(' ');
+}
+
+static inline void flushBuf() {
+    fwrite(wbuf, 1, wpos, fout);
+}
