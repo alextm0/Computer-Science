@@ -1,0 +1,60 @@
+class OutParser {
+    private:
+        FILE *fout;
+        char *buff;
+        int sp;
+
+        void writeChar(char ch) {
+            if(sp == 50000) {
+                fwrite(buff, 1, 50000, fout);
+                sp = 0;
+                buff[sp++] = ch;
+            }
+            else
+                buff[sp++] = ch;
+        }
+    public:
+        OutParser(const char *name) {
+            fout = fopen(name, "w");
+            buff = new char[50000]();
+            sp = 0;
+        }
+
+        ~OutParser() {
+            fwrite(buff, 1, sp, fout);
+            fclose(fout);
+        }
+
+        OutParser& operator << (int val) {
+            if(val <= 9)
+                writeChar(val + '0');
+            else {
+                (*this) << (val / 10);
+                writeChar(val % 10 + '0');
+            }
+            return *this;
+        }
+
+        OutParser& operator << (long long val) {
+            if(val <= 9)
+                writeChar(val + '0');
+            else {
+                (*this) << (val / 10);
+                writeChar(val % 10 + '0');
+            }
+            return *this;
+        }
+
+        OutParser& operator << (char ch) {
+            writeChar(ch);
+            return *this;
+        }
+
+        OutParser& operator << (const char *ch) {
+            while( *ch ) {
+                writeChar(*ch);
+                ch++;
+            }
+            return *this;
+        }
+};
