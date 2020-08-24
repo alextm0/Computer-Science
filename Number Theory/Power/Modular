@@ -1,0 +1,11 @@
+int putereMOD(int n, int base, int MOD) {
+    int ans = 1, p = n;
+
+    while(base != 0) {
+        if(base % 2 == 1)
+            ans = (ans * p) % MOD;
+        p = (p * p) % MOD;
+        base /= 2;
+    }
+    return ans;
+}
