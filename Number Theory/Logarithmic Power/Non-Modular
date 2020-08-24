@@ -1,8 +1,0 @@
-int putere( int n, int base ) {
-    if( base == 0 )
-        return 1;
-
-    if( base % 2 == 0 )
-        return putere( n * n, base / 2 );
-    return n * putere( n * n, base / 2 ); 
-}
