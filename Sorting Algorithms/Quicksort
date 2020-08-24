@@ -1,0 +1,27 @@
+void quicksort(int v[], int begin, int end, int semn) {
+    int aux, b, e, pivot;
+
+    b = begin, e = end;
+    pivot = v[(begin + end) / 2] * semn;
+
+    while(v[b] * semn < pivot) b++;
+    while(v[e] * semn > pivot) e--;
+
+    while(b < e) {
+        aux = v[b];
+        v[b] = v[e];
+        v[e] = aux;
+
+        do
+            b++;
+        while(v[b] * semn < pivot);
+        do
+            e--;
+        while(v[e] * semn > pivot);
+    }
+
+    if(begin < e)
+        quicksort(v, begin, e, semn);
+    if(e + 1 < end)
+        quicksort(v, e + 1, end, semn);
+}
