@@ -1,0 +1,21 @@
+void DownHeap(int Heap[], int N, int K) {
+    int Son = K * 2;
+    if(Son + 1 <= N && Heap[Son + 1] > Heap[Son])
+        Son++;
+
+    if(Son <= N && Heap[Son] > Heap[K]) {
+        swap(Heap[K], Heap[Son]);
+        DownHeap(Heap, N, Son);
+    }
+}
+
+void heapsort(int Heap[], int N) {
+    for(int i = N / 2; i > 0; i--)
+        DownHeap(Heap, N, i);
+
+    int i = N;
+    while(i >= 2) {
+        swap(Heap[1], Heap[i]);
+        DownHeap(Heap, --i, 1);
+    }
+}
