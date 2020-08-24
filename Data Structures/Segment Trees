@@ -1,0 +1,72 @@
+const int MAXN;
+
+class segmentTree {
+    int size, tree[MAXN * 4];
+
+    private:
+        const int NEUTRAL = 0;
+        int merge(int a, int b) {
+            return a + b;
+        }
+
+        int Single(int val) {
+            return val;
+        }
+
+        void build(int a[MAXN], int node, int st, int dr) {
+            if(st == dr) {
+                if(st <= size) tree[node] = a[st];
+                else tree[node] = NEUTRAL;
+                return;
+            }
+
+            int mid = (st + dr) / 2;
+            build(a, node * 2, st, mid);
+            build(a, node * 2 + 1, mid + 1, dr);
+            tree[node] = merge(tree[node * 2], tree[node * 2 + 1]);
+        }
+
+        void update(int pos, int val, int node, int st, int dr) {
+            if(st == dr) {
+                tree[node] = Single(val);
+                return;
+            }
+
+            int mid = (st + dr) / 2;
+            if(pos <= mid)
+                update(pos, val, node * 2, st, mid);
+            else
+                update(pos, val, node * 2 + 1, mid + 1, dr);
+            tree[node] = merge(tree[node * 2], tree[node * 2 + 1]);
+        }
+
+        int query(int l, int r, int node, int st, int dr) {
+            if(r < st || l > dr) return NEUTRAL;
+            if(l <= st && dr <= r) return tree[node];
+
+            int mid = (st + dr) / 2;
+            int Q1 = query(l, r, node * 2, st, mid);
+            int Q2 = query(l, r, node * 2 + 1, mid + 1, dr);
+            return merge(Q1, Q2);
+        }
+
+    public:   
+        void init(int n) {
+            size = 1;
+            while(size < n) size *= 2;
+            for(int i = 1; i <= size; i++)
+                tree[i] = NEUTRAL;
+        }
+
+        void build(int a[MAXN]) {
+            build(a, 1, 1, size);
+        }
+
+        void update(int pos, int val) {
+            update(pos, val, 1, 1, size);
+        }
+
+        int query(int l, int r) {
+            return query(l, r, 1, 1, size);
+        }
+};
