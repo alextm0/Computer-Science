@@ -1,0 +1,10 @@
+ull mult(ull a, ull b, ull MOD) {
+	ull res = 0; a %= MOD;
+	while(b > 0) {
+		if(b & 1) 
+			res = (res + a) % MOD;
+		a = (a * 2) % MOD;
+		b /= 2;
+	}
+	return res;
+}
