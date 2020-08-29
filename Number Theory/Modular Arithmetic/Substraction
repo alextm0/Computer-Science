@@ -1,0 +1,3 @@
+int substraction(int a, int b, int MOD) {
+	return (a - b + MOD) % MOD;
+}
