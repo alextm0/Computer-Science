@@ -1,0 +1,24 @@
+FILE *fin, *fout;
+
+const int BUFSIZE = 4096;
+int sp; char buff[BUFSIZE];
+
+static inline void initRead() {
+	fin = fopen("pb.in", "r");
+	sp = BUFSIZE - 1;
+}
+
+static inline char readChar() {
+	if( !(sp = (sp + 1) & (BUFSIZE - 1)) )
+		fread(buff, 1, BUFSIZE, fin);
+	return buff[sp];
+}
+
+static inline int readInt() {
+	char c; int res = 0;
+	while( !isdigit( c = readChar() ) );
+	do
+		res = res * 10 + c - '0';
+	while( isdigit( c = readChar() ) );
+	return res;
+}
