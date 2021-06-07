@@ -1,0 +1,342 @@
+#include <bits/stdc++.h>
+#include <windows.h>
+#include <conio.h>
+using namespace std;
+
+ifstream fin("test.in");
+
+#define SP fixed << setprecision(2)
+#define NMAX 4000
+
+int Set[11], n = 10, cerinta = 1;
+int N, NR, i, j, aux, Key, cnt;
+int T[NMAX+1];
+char key;
+
+void color(int color) {
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+void gotoxy(int x, int y) {
+    COORD c;
+    c.X = x;
+    c.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
+}
+
+struct elev {
+    float N1, N2, N3, Medie;
+    int Cod, Rez;
+
+    void Print() {
+        cout << SP << Cod << " |  " << N1 << "  |  ";
+        cout << N2 << "  |   " << N3 << "  |   " << Medie << "  |   ";
+        if(Rez == 1) {
+            color(2);
+            cout << "REUSIT\n";
+        } else {
+            color(4);
+            cout << "RESPINS\n";
+        }
+        color(7);
+    }
+} E[NMAX + 1];
+
+void PrintMenu() {
+    gotoxy(0, 0);
+    cout << char(218); for(int i=0; i<32; i++){cout << char(196);} cout << char(191) << '\n';
+    cout << char(179); for(int i=0; i<32; i++) cout << ' '; cout << char(179);
+
+    gotoxy(0, 1);
+    cout << char(179) << "            Meniu    \n" << char(179);
+    for(int i = 0; i < 32; i++) cout << ' ';
+    cout << char(179) << '\n';
+
+    gotoxy(0, 3);
+    cout << char(179);
+    color(Set[0]);
+    cout << "  1. Introducere candidat       ";
+    color(7); cout << char(179) << '\n';
+
+    gotoxy(0, 4);
+    cout << char(179); for(int i=0; i<2; i++) cout << ' ';
+    color(Set[1]);
+    cout << "2. Modificare date candidat   ";
+    color(7); cout << char(179) << '\n';
+
+    gotoxy(0, 5);
+    cout << char(179); for(int i=0; i<2; i++) cout << ' ';
+    color(Set[2]);
+    cout << "3. Cautare candidat dupa cod  ";
+    color(7); cout << char(179) << '\n';
+
+    gotoxy(0, 6);
+    cout << char(179); for(int i=0; i<2; i++) cout << ' ';
+    color(Set[3]);
+    cout << "4. Stergere candidat          ";
+    color(7); cout << char(179) << '\n';
+
+    gotoxy(0, 7);
+    cout << char(179); for(int i=0; i<2; i++) cout << ' ';
+    color(Set[4]);
+    cout << "5. Lista rezultate candidati  ";
+    color(7); cout << char(179) << '\n';
+
+    gotoxy(0, 8);
+    cout << char(179); for(int i=0; i<2; i++) cout << ' ';
+    color(Set[5]);
+    cout << "6. Cea mai mare medie         ";
+    color(7); cout << char(179) << '\n';
+
+    gotoxy(0, 9);
+    cout << char(179); for(int i=0; i<2; i++) cout << ' ';
+    color(Set[6]);
+    cout << "7. Procent de promovabilitate ";
+    color(7); cout << char(179) << '\n';
+
+    gotoxy(0, 10);
+    cout << char(179); for(int i=0; i<2; i++) cout << ' ';
+    color(Set[7]);
+    cout << "8. Statistica transe medii    ";
+    color(7); cout << char(179) << '\n';
+
+    gotoxy(0, 11);
+    cout << char(179); for(int i=0; i<2; i++) cout << ' ';
+    color(Set[8]);
+    cout << "9. Surpriza <3                ";
+    color(7); cout << char(179) << '\n';
+
+    gotoxy(0, 12);
+    cout << char(179); for(int i=0; i<2; i++) cout << ' ';
+    color(Set[9]);
+    cout << "0. Inchidere aplicatie        ";
+    color(7); cout << char(179) << '\n';
+
+    cout << char(192); for(int i=0; i<32; i++) cout << char(196); cout << char(217);
+}
+
+void Adaugare() {
+    elev x = E[N];
+    int ok = 0;
+    for(i = 1; i <= N-1 && !ok; i++)
+        if(x.Medie > E[i].Medie) {
+            elev Copie = E[i];
+            for(j = N; j >= i + 1; j--)
+                swap(E[j], E[j-1]);
+            E[i] = x;
+            ok = 1;
+        }
+}
+
+void Update(int i) {
+    E[i].Medie = (E[i].N1 + E[i].N2 + E[i].N3) / 3.00;
+    E[i].Rez = (E[i].Medie >= 6.00 && E[i].N1 >= 5.00 && E[i].N2 >= 5.00 && E[i].N3 >= 5.00);
+    NR += E[i].Rez;
+
+    if(E[i].Medie < 6) T[1]++;
+    else if(E[i].Medie >= 6 && E[i].Medie < 6.99) T[2]++;
+    else if(E[i].Medie >= 7 && E[i].Medie < 7.99) T[3]++;
+    else if(E[i].Medie >= 8 && E[i].Medie < 8.99) T[4]++;
+    else if(E[i].Medie >= 9 && E[i].Medie < 9.99) T[5]++;
+    else if(E[i].Medie == 10) T[6]++;
+}
+
+int Cautare(int C) {
+    for(i = 1; i <= N; i++)
+        if(C == E[i].Cod)
+            return i;
+    return 0;
+}
+
+int main() {
+    for(int i = 0; i < n; i++)
+        Set[i] = 7;
+
+    fin >> N;
+    for(i = 1; i <= N; i++) {
+        fin >> E[i].Cod >> E[i].N1 >> E[i].N2 >> E[i].N3;
+        Update(i);
+    }
+
+    for(i = 1; i < N; i++)
+        for(j = i + 1; j <= N; j++)
+            if(E[i].Medie < E[j].Medie)
+                swap(E[i], E[j]);
+
+    while(true) {
+        PrintMenu();
+
+        key = _getch();
+        cerinta -= (key == 72 && cerinta > 1);
+        cerinta += (key == 80 && cerinta < n);
+        if(key == '\r') {
+            system("cls");
+            if(cerinta == 1) {
+                cout << "Introduceti datele: \n";
+                cout << "Cod: "; cin >> E[++N].Cod;
+                cout << "Nota 1: "; cin >> E[N].N1;
+                cout << "Nota 2: "; cin >> E[N].N2;
+                cout << "Nota 3: "; cin >> E[N].N3;
+                Update(N);
+                Adaugare();
+
+                system("Color 2F");
+                cout << "\nAdaugare cu succes!\n";
+            }
+            else if(cerinta == 2) {
+                cout << "Introduceti codul: ";
+                cin >> Key;
+                int poz = Cautare(Key);
+                if(poz == 0) {
+                    system("Color 4F");
+                    cout << "\n\nCandidatul cu codul " << Key << " nu exista.\n\n";
+                    system("pause");
+                    system("cls");
+                    system("Color 7");
+                    continue;
+                }
+
+                NR += (E[poz].Medie >= 6.00 && E[poz].N1 >= 5.00 && E[poz].N2 >= 5.00 && E[poz].N3 >= 5.00);
+
+                cout << "\n     Cod    Nota 1   Nota 2    Nota 3    Medie     Rezultat\n";
+                cout << "-------------------------------------------------------------\n";
+                cout << "1. ";
+                E[poz].Print();
+                cout << "\n";
+
+                cout << "Nota pe care doriti sa o modificati: ";
+                int id; cin >> id;
+
+                if(id == 1) {
+                    cout << "Din nota " << E[poz].N1 << " in nota ";
+                    cin >> E[poz].N1;
+                    cout << "\n";
+                } else if(id == 2) {
+                    cout << "Din nota " << E[poz].N2 << " in nota ";
+                    cin >> E[poz].N2;
+                    cout << "\n";
+                } else if(id == 3) {
+                    cout << "Din nota " << E[poz].N3 << " in nota ";
+                    cin >> E[poz].N3;
+                    cout << "\n";
+                }
+
+                Update(poz);
+                cout << "\n     Cod    Nota 1   Nota 2    Nota 3    Medie     Rezultat\n";
+                cout << "-------------------------------------------------------------\n";
+                cout << "1. ";
+                E[poz].Print();
+            }
+            else if(cerinta == 3) {
+                cout << "Introduceti codul: ";
+                cin >> Key;
+                int p = Cautare(Key);
+                if(p == 0) {
+                    system("Color 4F");
+                    cout << "\nCandidatul cu codul " << Key << " nu exista.\n\n";
+                    system("pause"), system("cls");
+                    system("Color 07");
+                    continue;
+                }
+
+                system("Color 2F");
+                cout << "\n     Cod    Nota 1   Nota 2    Nota 3    Medie     Rezultat\n";
+                cout << "-------------------------------------------------------------\n";
+                cout << "1. ";
+                E[p].Print();
+            }
+            else if(cerinta == 4) {
+                cout << "Introduceti codul: ";
+                cin >> Key;
+                int p = Cautare(Key);
+                if(p == 0) {
+                    system("Color 4F");
+                    cout << "\nCandidatul cu codul " << Key << " nu exista.\n";
+                }
+                else {
+                    if(N == 0) continue;
+                    for(i = p + 1; i <= N; i++)
+                        swap(E[i], E[i-1]);
+                    N--;
+
+                    NR -= (E[p].Medie >= 6.00 && E[p].N1 >= 5.00 && E[p].N2 >= 5.00 && E[p].N3 >= 5.00);
+                    system("Color 2F");
+                    cout << "\nStergere cu succes!";
+                }
+
+            }
+            else if(cerinta == 5) {
+                cout << "\n     Cod    Nota 1   Nota 2    Nota 3    Medie     Rezultat\n";
+                cout << "___________________________________________________________\n\n";
+                for(i = 1; i <= N; i++) {
+                    cout << i << ". ";
+                    E[i].Print();
+                }
+                cout << "___________________________________________________________\n\n";
+            }
+            else if(cerinta == 6) {
+                cout << "Cea mai mare medie : " << SP << E[1].Medie << "\n";
+
+                cnt = 0;
+                for(i = 1; i <= N; i++)
+                    cnt += (E[1].Medie == E[i].Medie);
+                cout << "Aceasta medie a fost obtinuta de " << cnt << " elev(i)\n";
+
+                cout << "\n     Cod    Nota 1   Nota 2    Nota 3    Medie     Rezultat\n";
+                cout << "-------------------------------------------------------------\n";
+                for(i = 1; i <= N; i++)
+                    if(E[1].Medie == E[i].Medie) {
+                        cout << i << ". ";
+                        E[i].Print();
+                    }
+            }
+            else if(cerinta == 7) {
+                float ans = (NR * 100) / N;
+
+                (ans >= 50.00 ? system("Color 2F") : system("Color 4F"));
+                cout << "Procentul de promovabilitate este ";
+                cout << SP << ans << "\n";
+            }
+            else if(cerinta == 8) {
+                cout << "Numar candidati cu medii mai mici decat 6: " << T[1] << "\n";
+                cout << "Numar candidati cu medii intre 6 si 6.99: " << T[2] << "\n";
+                cout << "Numar candidati cu medii intre 7 si 7.99: " << T[3] << "\n";
+                cout << "Numar candidati cu medii intre 8 si 8.99: " << T[4] << "\n";
+                cout << "Numar candidati cu medii intre 9 si 9.99: " << T[5] << "\n";
+                cout << "Numar candidati cu media 10: " << T[6] << "\n";
+            }
+            else if(cerinta == 9) { /// surpriza ascunsa
+                color(2);
+                cout << "Premiul de excelenta pentru Prostul Satului in anul scolar 2020-2021 a fost obtinut de:\n";
+                color(7);
+                cout << "\n     Cod    Nota 1   Nota 2    Nota 3    Medie     Rezultat\n";
+                cout << "___________________________________________________________\n\n";
+
+                int p = N;
+                while(p >= 1 && E[p].Rez)
+                    p--;
+                cout << "1. ";
+                E[p].Print();
+
+                color(2);
+                cout << "\nFelicitari! Ne vedem in vara <3";
+                color(7);
+            }
+            else if(cerinta == 10)
+                break;
+
+            cout << "\n\n";
+            if(cerinta != 10) {
+                system("pause");
+                system("cls");
+                system("Color 07");
+            }
+        }
+
+        for(int i = 0; i < n; i++)
+            Set[i] = 7;
+        Set[cerinta-1] = 12;
+    }
+
+    return 0;
+}
